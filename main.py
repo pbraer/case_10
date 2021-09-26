@@ -1,5 +1,5 @@
 # Case-study №9 / Gas station operation model
-# Developers:   Braer P. (%),
+# Developers:   Braer P. (80%),
 #               Kokorina D. (%),
 #               Zhuravlev A. (%)
 
@@ -126,9 +126,9 @@ for client in day_info:
                     petrol = petrol[:len(petrol) - 1]
                 else:
                     petrol = info[1]
-                info[2] = info[2] + '*'
-                m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(info[2]))
+                m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(inf[2] + '*'))
                 now.append(m_inf)
+            inf[2] = inf[2] + '*'
             result_today[done] = now
             old_h = h_time
             old_m = m_time
@@ -153,10 +153,12 @@ for client in day_info:
                     petrol = petrol[:len(petrol) - 1]
                 else:
                     petrol = info[1]
-                info[2] = info[2][:info[2].find('*') - 2]
-                m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(info[2]))
+                if info[2].find('*') != -1:
+                    info[2] = info[2][: info[2].find('*') - 2]
+                m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(inf[2]))
                 now.append(m_inf)
             go = new_client_go(h_time, m_time, old_h, old_m, str(client[3]), str(client[2]), str(need_min))
+            inf[2] = inf[2] + random.randint(0, 1) * '*'
             result_today[go] = now
             money_sum = money_sum + price[client[3]] * client[2]
             amount_petrol[client[3]] = amount_petrol[client[3]] + client[2]
@@ -182,13 +184,14 @@ result_list = list(result_today.keys())
 result_list.sort()
 
 for step in result_list:
+    print('')
     data = result_today[step]
     print(step)
     for avt in data:
         print(avt)
+    print(' ')
 
 litres = ''
 for amount in amount_petrol:
     litres = litres + amount + ': ' + str(amount_petrol[amount]) + ' '
 result(litres, money_sum, fail_clients)
-
