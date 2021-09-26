@@ -8,7 +8,12 @@ import math
 
 #petrol price
 
-price = {'АИ-92': 45.02, 'АИ-80': 31.50, 'АИ-98': 57.72}
+price = {'АИ-92': 45.02, 'АИ-95': 31.50, 'АИ-98': 57.72}
+
+# start param
+money_sum = 0
+fail_clients = 0
+amount_petrol = {'АИ-92': 0, 'АИ-95': 0, 'АИ-98': 0}
 
 # Information about machines
 with open('azs.txt', 'r') as info:
@@ -75,7 +80,7 @@ def new_client_fail(hour, minute, petrol, litres, need_minutes):
 
 
 def new_client_go(new_hour, new_minute, hour, minute, petrol, litres, need_minutes):
-    go = 'В ' + new_hour + ':' + new_minute + ' клиент:  ' + hour + ':' + minute + ' ' + petrol + ' ' + litres + ' ' + need_minutes + ' заправил свой автомобиль и покинул АЗС.'
+    go = 'В ' + new_hour + ':' + new_minute + ' клиент: ' + hour + ':' + minute + ' ' + petrol + ' ' + litres + ' ' + need_minutes + ' заправил свой автомобиль и покинул АЗС.'
     return go
 
 # Writing about information of machine at the moment
@@ -91,19 +96,10 @@ def result(sum_litres, sum, lose):
         print('Количество клиентов, которые покинули АЗС не заправив автомобиль из-за «скопившейся» очереди: ', lose, sep='')
 
 
+
+
 result_today = {}
 now = []
-for avt in azs_info:
-    info = azs_info[avt]
-    if len(info[1]) == 3:
-        petrol = ''
-        for el in info[1]:
-            petrol = petrol + el + ' '
-        petrol = petrol[:len(petrol) - 1]
-    else:
-        petrol = info[1]
-    m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(info[2]))
-    now.append(m_inf)
 
 for client in day_info:
     h_time = str(client[0])
@@ -115,9 +111,25 @@ for client in day_info:
     before = len(result_today)
     for machine in azs_info:
         inf = azs_info[machine]
-        if 0 <= len(inf[2]) <= inf[0] and client[3] in inf[1] or client[3] == inf[1]:
+        if 0 <= len(inf[2]) <= inf[0] and (client[3] in inf[1] or client[3] == inf[1]) and client[3] in price:
             need_min = math.ceil(client[2]/10 + random.randint(-1, 1))
+            if need_min == 0:
+                need_min = 1
             done = new_client_done(h_time, m_time, str(client[3]), str(client[2]), str(need_min), str(machine))
+            now =[]
+            for avt in azs_info:
+                info = azs_info[avt]
+                if len(info[1]) == 3:
+                    petrol = ''
+                    for el in info[1]:
+                        petrol = petrol + el + ' '
+                    petrol = petrol[:len(petrol) - 1]
+                else:
+                    petrol = info[1]
+                info[2] = info[2] + '*'
+                m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(info[2]))
+                now.append(m_inf)
+            result_today[done] = now
             old_h = h_time
             old_m = m_time
             m_time = client[1] + need_min
@@ -131,13 +143,40 @@ for client in day_info:
                 h_time = '0' + h_time
             if len(m_time) == 1:
                 m_time = '0' + m_time
+            now = []
+            for avt in azs_info:
+                info = azs_info[avt]
+                if len(info[1]) == 3:
+                    petrol = ''
+                    for el in info[1]:
+                        petrol = petrol + el + ' '
+                    petrol = petrol[:len(petrol) - 1]
+                else:
+                    petrol = info[1]
+                info[2] = info[2][:info[2].find('*') - 2]
+                m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(info[2]))
+                now.append(m_inf)
             go = new_client_go(h_time, m_time, old_h, old_m, str(client[3]), str(client[2]), str(need_min))
-            result_today[done] = now
             result_today[go] = now
+            money_sum = money_sum + price[client[3]] * client[2]
+            amount_petrol[client[3]] = amount_petrol[client[3]] + client[2]
             break
-    if len(result_today) != before:
+    if len(result_today) == before:
+        now =[]
+        for avt in azs_info:
+            info = azs_info[avt]
+            if len(info[1]) == 3:
+                petrol = ''
+                for el in info[1]:
+                    petrol = petrol + el + ' '
+                petrol = petrol[:len(petrol) - 1]
+            else:
+                petrol = info[1]
+            m_inf = machine_info(str(avt), str(info[0]), str(petrol), str(info[2]))
+            now.append(m_inf)
         fail = new_client_fail(h_time, m_time, str(client[3]), str(client[2]), str(math.ceil(client[2] / 10 + random.randint(-1, 1))))
-        result_today[done] = now
+        result_today[fail] = now
+        fail_clients += 1
 
 result_list = list(result_today.keys())
 result_list.sort()
@@ -147,3 +186,9 @@ for step in result_list:
     print(step)
     for avt in data:
         print(avt)
+
+litres = ''
+for amount in amount_petrol:
+    litres = litres + amount + ': ' + str(amount_petrol[amount]) + ' '
+result(litres, money_sum, fail_clients)
+
