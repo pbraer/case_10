@@ -115,6 +115,9 @@ with open('input.txt', 'r') as info:
         inf.append(petrol)
         day_info.append(inf)
 
+#new_client_done(1, 1, 5, 50, 5, 'АИ-92')
+
+
 with open('input.txt', 'r') as info:
     to_read = info.readlines()
     day_info = []
@@ -154,3 +157,5 @@ with open('input.txt', 'r') as info:
                 # azs_info[number] = inf
 
                 machine_info(number, q_max, petrol, '*')
+
+
