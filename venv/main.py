@@ -27,7 +27,7 @@ with open('azs.txt', 'r') as info:
         azs_info[number] = inf
 
 # Information about day
-print(azs_info)
+#print(azs_info)
 
 with open('input.txt', 'r') as info:
     to_read = info.readlines()
