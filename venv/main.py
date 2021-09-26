@@ -115,23 +115,42 @@ with open('input.txt', 'r') as info:
         inf.append(petrol)
         day_info.append(inf)
 
-new_client_done(hours, minutes, line, litres, 5, petrol)
-
-with open('azs.txt', 'r') as info:
+with open('input.txt', 'r') as info:
     to_read = info.readlines()
-    azs_info = {}
+    day_info = []
     for line in to_read:
         inf = []
-        number = line[:line.find(' ')]
+        hours = line[:line.find(':')]
+        hours = int(hours)
+        inf.append(hours)
+        minutes = line[line.find(':') + 1: line.find(' ')]
+        minutes = int(minutes)
+        inf.append(minutes)
         line = line[line.find(' ') + 1:]
-        q_max = line[:line.find(' ')]
-        line = line[line.find(' ') + 1:]
-        inf.append(int(q_max))
-        petrol = line[:line.find('\n')]
-        # if petrol.find(' ') != -1:
-        # petrol = petrol.split(' ')
-        # petrol = set(petrol)
-        # inf.append(petrol)
-        # azs_info[number] = inf
+        litres = line[:line.find(' ')]
+        litres = int(litres)
+        inf.append(litres)
+        petrol = line[line.find(' ') + 1: line.find('\n')]
+        inf.append(petrol)
+        day_info.append(inf)
 
-        machine_info(number, q_max, petrol, '*')
+        new_client_done(hours, minutes, line, litres, 5, petrol)
+
+        with open('azs.txt', 'r') as info:
+            to_read = info.readlines()
+            azs_info = {}
+            for line in to_read:
+                inf = []
+                number = line[:line.find(' ')]
+                line = line[line.find(' ') + 1:]
+                q_max = line[:line.find(' ')]
+                line = line[line.find(' ') + 1:]
+                inf.append(int(q_max))
+                petrol = line[:line.find('\n')]
+                # if petrol.find(' ') != -1:
+                # petrol = petrol.split(' ')
+                # petrol = set(petrol)
+                # inf.append(petrol)
+                # azs_info[number] = inf
+
+                machine_info(number, q_max, petrol, '*')
