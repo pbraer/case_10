@@ -1,7 +1,7 @@
 # Case-study №9 / Gas station operation model
 # Developers:   Braer P. (83%),
 #               Kokorina D. (%),
-#               Zhuravlev A. (%)
+#               Zhuravlev A. (50%)
 
 import random
 import math
